@@ -1,0 +1,4 @@
+
+This project is to analyze different architecure of DNN for different datasets of ECG. 
+
+Pytorch is used to train and evaluate 
