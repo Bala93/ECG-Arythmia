@@ -11,8 +11,8 @@ from tqdm import tqdm
 if __name__ == "__main__":
     #### Path settings ####
     # Datapath
-    data_path  = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_data2s.npy'
-    label_path = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_label2s.npy'
+    data_path  = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/afdb_data2s.npy'
+    label_path = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/afdb_label2s.npy'
     model_path = '/media/htic/NewVolume1/murali/ecg/codes/memea/v3/models/Sun Jan 21 15:08:22 2018/Epoch49.pt'
     
     

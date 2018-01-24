@@ -13,7 +13,7 @@ import torch.nn as nn
 import numpy as np
 import time
 import os
-import copy
+import sys
 
 # Written functions
 from arch import ECG
@@ -32,7 +32,6 @@ def testDataEval(testloader,ecg):
         pred_y = torch.max(y_predict.data,1)[1]
         accu   = torch.sum(pred_y == y)/float(y.size()[0])
         accuracy_list.append(accu)    
-    
     accuracy = np.mean(accuracy_list)
 
     return accuracy
@@ -46,6 +45,9 @@ if __name__ == "__main__":
     data_path  = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_data2s.npy'
     label_path = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_label2s.npy'
     
+    # Model path
+    model_path = '/media/htic/NewVolume1/murali/ecg/codes/memea/v1/models/Sat Jan 20 23:17:37 2018/Epoch24.pt'
+    
     #Logfiles
     start_time = time.ctime()
     log_file = './logfiles/' + start_time + '.txt'
@@ -58,14 +60,34 @@ if __name__ == "__main__":
     LR    = 0.01
     BATCH_SIZE_TRAIN = 8
     BATCH_SIZE_TEST  = 64
+    TRANSFER_LEARN = False
+    
     
     # Dataloaders
     trainloader,testloader = getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST)
     
     # Initialize Model
-    ecg = ECG()
-    ecg = ecg.cuda()
-
+    if TRANSFER_LEARN:
+        ## Transfer learing part
+        ecg = torch.load(model_path)
+        ## Freeze all the layers
+        for param in ecg.parameters():
+            param.requires_grad = False
+        
+        ## Make it available for three layers allowing for transfer learning
+        fc_layers = [ecg.fc1,ecg.fc2,ecg.fc3]
+        
+        for param in fc_layers:
+            param.requires_grad = True 
+            
+    else:
+        ecg = ECG()
+        ecg = ecg.cuda()
+    
+    
+    
+    sys.exit(0)
+    
     #Loss function
     optimizer = torch.optim.SGD(ecg.parameters(),lr=LR)
     loss_func = nn.CrossEntropyLoss()

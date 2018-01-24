@@ -10,7 +10,6 @@ import numpy as np
 from torch.utils.data import DataLoader,TensorDataset
 
 
-
 def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     
     in_data_npy = np.load(data_path)
@@ -23,6 +22,7 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     label_1 = np.where(out_data_npy == 1)
     label_2 = np.where(out_data_npy == 2)
     
+    
     in_data_0 = in_data_npy[label_0]
     in_data_1 = in_data_npy[label_1]
     in_data_2 = in_data_npy[label_2]
@@ -34,7 +34,7 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     CLASS_COUNT = 2500
     INDEX_SEPARATE = 2000
     TRAIN_LEN = 2000
-    TEST_LEN  = 500
+    TEST_LEN  = 500 
     
     np.random.shuffle(in_data_0)
     np.random.shuffle(in_data_1)
@@ -48,22 +48,24 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     train_data_1 = in_data_1[:INDEX_SEPARATE,:]
     train_data_2 = in_data_2[:INDEX_SEPARATE,:]
     
-    train_label_0 = np.zeros([TRAIN_LEN,1])
-    train_label_1 = np.ones([TRAIN_LEN,1])
-    train_label_2 = 2 * np.ones([TRAIN_LEN,1])
+    train_label_0 = np.zeros([TRAIN_LEN,1],dtype=int)
+    train_label_1 = np.ones([TRAIN_LEN,1],dtype=int)
+    train_label_2 = 2 * np.ones([TRAIN_LEN,1],dtype=int)  
 
     
     test_data_0 = in_data_0[INDEX_SEPARATE:,:]
     test_data_1 = in_data_1[INDEX_SEPARATE:,:]
     test_data_2 = in_data_2[INDEX_SEPARATE:,:]
+ 
 
-    test_label_0 = np.zeros([TEST_LEN,1])
-    test_label_1 = np.ones([TEST_LEN,1])
-    test_label_2 = 2 * np.ones([TEST_LEN,1])
+    test_label_0 = np.zeros([TEST_LEN,1],dtype=int)
+    test_label_1 = np.ones([TEST_LEN,1],dtype=int)
+    test_label_2 = 2 * np.ones([TEST_LEN,1],dtype=int)
 
     
     train_data  = np.vstack((train_data_0,train_data_1,train_data_2))
     test_data   = np.vstack((test_data_0,test_data_1,test_data_2))
+    
     train_label = np.vstack((train_label_0,train_label_1,train_label_2))
     test_label  = np.vstack((test_label_0,test_label_1,test_label_2))
     
@@ -76,9 +78,11 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     np.random.shuffle(test_data_label)
     
     trainData  = train_data_label[:,:-1]
-    trainLabel = train_data_label[:,-1]
+    trainLabel = train_data_label[:,-1].astype(int)
     testData   = test_data_label[:,:-1]
-    testLabel  = test_data_label[:,-1]
+    testLabel  = test_data_label[:,-1].astype(int)
+
+    print trainLabel,testLabel
 
     print "Dataset Distribution", np.unique(out_data_npy,return_counts=1)
     print "Random 2500 from each class is taken and 2000 is used for train and remaining for test" 
@@ -88,7 +92,6 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
 
     
     # Converting to torch tensors
-    
     train_data_torch = torch.FloatTensor(trainData)
     train_data_torch = train_data_torch.unsqueeze(1)
     train_label_torch = torch.LongTensor(trainLabel)
@@ -112,40 +115,76 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
 
 def getTestData(data_path,label_path,BATCH_SIZE_TEST):
     
+
     in_data_npy = np.load(data_path)
     out_data_npy = np.load(label_path)
     
+    print in_data_npy.shape
+    print out_data_npy.shape
     # Randomly pick 500 dataset as it is the lowest among all. 
     
     label_0 = np.where(out_data_npy == 0)
     label_1 = np.where(out_data_npy == 1)
     label_2 = np.where(out_data_npy == 2)
     
-    in_data_0 = in_data_npy[label_0]
-    in_data_1 = in_data_npy[label_1]
-    in_data_2 = in_data_npy[label_2]
-   
-    TEST_LEN  = 500
-    
-    np.random.shuffle(in_data_0)
-    np.random.shuffle(in_data_1)
-    np.random.shuffle(in_data_2)
+    label_0_count = label_0[0].shape[0]
+    label_1_count = label_1[0].shape[0]
+    label_2_count = label_2[0].shape[0]
+    print label_0_count,label_1_count,label_2_count
     
     
-    test_data_0 = in_data_0[:TEST_LEN,:]
-    test_data_1 = in_data_1[:TEST_LEN,:]
-    test_data_2 = in_data_2[:TEST_LEN,:]
-    test_data   = np.vstack((test_data_0,test_data_1,test_data_2))
+    TEST_LEN  = 3000
     
-    test_label_0 = np.zeros([TEST_LEN,1])
-    test_label_1 = np.ones([TEST_LEN,1])
-    test_label_2 = 2 * np.ones([TEST_LEN,1])
-    test_label  = np.vstack((test_label_0,test_label_1,test_label_2))
+    
+    if label_0_count > TEST_LEN:
+    
+        in_data_0 = in_data_npy[label_0]
+        np.random.shuffle(in_data_0)
+        test_data_0 = in_data_0[:TEST_LEN,:]
+        test_label_0 = np.zeros([TEST_LEN,1])
+        
+    
+    if label_1_count > TEST_LEN:    
+    
+        in_data_1 = in_data_npy[label_1]
+        np.random.shuffle(in_data_1)
+        test_data_1 = in_data_1[:TEST_LEN,:]
+        test_label_1 = np.ones([TEST_LEN,1])
+        
+    
+    if label_2_count > TEST_LEN:    
+        
+        in_data_2 = in_data_npy[label_2]
+        np.random.shuffle(in_data_2)
+        test_data_2 = in_data_2[:TEST_LEN,:]
+        test_label_2 = 2 * np.ones([TEST_LEN,1])
+    
+    if label_1_count == 0:
+        test_data   = np.vstack((test_data_0,test_data_2))
+        test_label  = np.vstack((test_label_0,test_label_2))
+    
+    if label_0_count == 0 and label_2_count == 6:
+        test_data   = np.vstack((test_data_1))
+        test_label  = np.vstack((test_label_1))
+        
+    if label_0_count != 0 and label_1_count != 0:
+        test_data = np.vstack((test_data_0,test_data_1))
+        test_label = np.vstack((test_label_0,test_label_1))
+
+    
+    if label_0_count != 0 and label_1_count != 0 and label_2_count != 0:
+        test_data = np.vstack((test_data_0,test_data_1,test_data_2))
+        test_label = np.vstack((test_label_0,test_label_1,test_label_2))
     
     test_data_label  = np.hstack((test_data,test_label))
     np.random.shuffle(test_data_label)
+#    print test_data_label.shape
     
     testData   = test_data_label[:,:-1]
+    #print testData.shape
+    #plt.title(test_label[12])
+    #plt.plot(testData[12,:])
+    #plt.show()
     testLabel  = test_data_label[:,-1]
     
     test_data_torch = torch.FloatTensor(testData)

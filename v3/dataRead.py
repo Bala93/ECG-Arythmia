@@ -23,6 +23,7 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     label_1 = np.where(out_data_npy == 1)
     label_2 = np.where(out_data_npy == 2)
     
+    
     in_data_0 = in_data_npy[label_0]
     in_data_1 = in_data_npy[label_1]
     in_data_2 = in_data_npy[label_2]
@@ -112,38 +113,54 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
 
 def getTestData(data_path,label_path,BATCH_SIZE_TEST):
     
+
     in_data_npy = np.load(data_path)
     out_data_npy = np.load(label_path)
-    
     # Randomly pick 500 dataset as it is the lowest among all. 
     
     label_0 = np.where(out_data_npy == 0)
     label_1 = np.where(out_data_npy == 1)
     label_2 = np.where(out_data_npy == 2)
     
-    in_data_0 = in_data_npy[label_0]
-    in_data_1 = in_data_npy[label_1]
-    in_data_2 = in_data_npy[label_2]
-   
-    TEST_LEN  = 500
-    
-    np.random.shuffle(in_data_0)
-    np.random.shuffle(in_data_1)
-    np.random.shuffle(in_data_2)
+    label_0_count = label_0[0].shape[0]
+    label_1_count = label_1[0].shape[0]
+    label_2_count = label_2[0].shape[0]
+    print label_0_count,label_1_count,label_2_count
     
     
-    test_data_0 = in_data_0[:TEST_LEN,:]
-    test_data_1 = in_data_1[:TEST_LEN,:]
-    test_data_2 = in_data_2[:TEST_LEN,:]
-    test_data   = np.vstack((test_data_0,test_data_1,test_data_2))
+    TEST_LEN  = 250
     
-    test_label_0 = np.zeros([TEST_LEN,1])
-    test_label_1 = np.ones([TEST_LEN,1])
-    test_label_2 = 2 * np.ones([TEST_LEN,1])
-    test_label  = np.vstack((test_label_0,test_label_1,test_label_2))
+    
+    if label_0_count > TEST_LEN:
+    
+        in_data_0 = in_data_npy[label_0]
+        np.random.shuffle(in_data_0)
+        test_data_0 = in_data_0[:TEST_LEN,:]
+        test_label_0 = np.zeros([TEST_LEN,1])
+        
+    
+    if label_1_count > TEST_LEN:    
+    
+        in_data_1 = in_data_npy[label_1]
+        np.random.shuffle(in_data_1)
+        test_data_1 = in_data_1[:TEST_LEN,:]
+        test_label_1 = np.ones([TEST_LEN,1])
+        
+    
+    if label_2_count > TEST_LEN:    
+        
+        in_data_2 = in_data_npy[label_2]
+        np.random.shuffle(in_data_2)
+        test_data_2 = in_data_2[:TEST_LEN,:]
+        test_label_2 = 2 * np.ones([TEST_LEN,1])
+    
+    if label_1_count == 0:
+        test_data   = np.vstack((test_data_0,test_data_2))
+        test_label  = np.vstack((test_label_0,test_label_2))
     
     test_data_label  = np.hstack((test_data,test_label))
     np.random.shuffle(test_data_label)
+#    print test_data_label.shape
     
     testData   = test_data_label[:,:-1]
     testLabel  = test_data_label[:,-1]

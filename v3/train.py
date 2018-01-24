@@ -14,6 +14,7 @@ import numpy as np
 import time
 import os
 import copy
+import sys
 
 # Written functions
 from arch import ECG
@@ -64,8 +65,11 @@ if __name__ == "__main__":
     
     # Initialize Model
     ecg = ECG()
-    ecg = ecg.cuda()
-
+    for i in ecg.children():
+	print dir(i)
+	break
+    ecg = ecg.cuda() 
+    sys.exit(0)
     #Loss function
     optimizer = torch.optim.SGD(ecg.parameters(),lr=LR)
     loss_func = nn.CrossEntropyLoss()
