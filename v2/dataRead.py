@@ -110,7 +110,52 @@ def getData(data_path,label_path,BATCH_SIZE_TRAIN,BATCH_SIZE_TEST):
     return trainLoader,testLoader
 
 
-
+def getTestData(data_path,label_path,BATCH_SIZE_TEST):
+    
+    in_data_npy = np.load(data_path)
+    out_data_npy = np.load(label_path)
+    
+    # Randomly pick 500 dataset as it is the lowest among all. 
+    
+    label_0 = np.where(out_data_npy == 0)
+    label_1 = np.where(out_data_npy == 1)
+    label_2 = np.where(out_data_npy == 2)
+    
+    in_data_0 = in_data_npy[label_0]
+    in_data_1 = in_data_npy[label_1]
+    in_data_2 = in_data_npy[label_2]
+   
+    TEST_LEN  = 500
+    
+    np.random.shuffle(in_data_0)
+    np.random.shuffle(in_data_1)
+    np.random.shuffle(in_data_2)
+    
+    
+    test_data_0 = in_data_0[:TEST_LEN,:]
+    test_data_1 = in_data_1[:TEST_LEN,:]
+    test_data_2 = in_data_2[:TEST_LEN,:]
+    test_data   = np.vstack((test_data_0,test_data_1,test_data_2))
+    
+    test_label_0 = np.zeros([TEST_LEN,1])
+    test_label_1 = np.ones([TEST_LEN,1])
+    test_label_2 = 2 * np.ones([TEST_LEN,1])
+    test_label  = np.vstack((test_label_0,test_label_1,test_label_2))
+    
+    test_data_label  = np.hstack((test_data,test_label))
+    np.random.shuffle(test_data_label)
+    
+    testData   = test_data_label[:,:-1]
+    testLabel  = test_data_label[:,-1]
+    
+    test_data_torch = torch.FloatTensor(testData)
+    test_data_torch = test_data_torch.unsqueeze(1)
+    test_label_torch = torch.LongTensor(testLabel)
+    
+    test_dataset  = TensorDataset(test_data_torch,test_label_torch)
+    testLoader   = DataLoader(test_dataset,batch_size=BATCH_SIZE_TEST)
+    
+    return testLoader
 
     
 #data_path  = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_data2s.npy'

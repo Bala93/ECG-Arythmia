@@ -1,7 +1,6 @@
 
 from torch.autograd import Variable
 import torch
-
 import numpy as np
 from dataRead import getTestData
 from tqdm import tqdm
@@ -13,9 +12,7 @@ if __name__ == "__main__":
     # Datapath
     data_path  = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_data2s.npy'
     label_path = '/media/htic/NewVolume1/murali/ecg/codes/datasets/multidataset/mitdb_label2s.npy'
-    model_path = '/media/htic/NewVolume1/murali/ecg/codes/memea/v3/models/Sun Jan 21 15:08:22 2018/Epoch49.pt'
-    
-    
+    model_path = '/media/htic/NewVolume1/murali/ecg/codes/memea/v1/models/Sat Jan 20 23:33:47 2018/Epoch24.pt'
 #    print os.path.exists(model_path)
 #    print model_path
     
@@ -26,7 +23,7 @@ if __name__ == "__main__":
     
     # Initialize Model
     ecg = torch.load(model_path)
-#    print ecg
+    print ecg
     ecg = ecg.cuda()
     
 #    print ecg

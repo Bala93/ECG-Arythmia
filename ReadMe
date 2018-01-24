@@ -2,3 +2,5 @@
 This project is to analyze different architecure of DNN for different datasets of ECG. 
 
 Pytorch is used to train and evaluate 
+
+The test code is added to each model. Just loading the model did not work as it was expecting a architecture defined before.
