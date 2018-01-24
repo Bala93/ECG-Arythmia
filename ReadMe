@@ -4,3 +4,8 @@ This project is to analyze different architecure of DNN for different datasets o
 Pytorch is used to train and evaluate 
 
 The test code is added to each model. Just loading the model did not work as it was expecting a architecture defined before.
+
+The label structure is N,V,A
+
+TODO:
+Have to do transfer learning for the final 3 layers.
